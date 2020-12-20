@@ -17,7 +17,6 @@ class IndiServer(object):
     def __init__(self, fifo=INDI_FIFO, conf_dir=INDI_CONFIG_DIR):
         self.__fifo = fifo
         self.__conf_dir = conf_dir
-
         # stop running indiserver, if any
         self.stop()
 
@@ -43,7 +42,6 @@ class IndiServer(object):
         full_cmd = 'echo "%s" > %s' % (cmd, self.__fifo)
         logging.info(full_cmd)
         call(full_cmd, shell=True)
-        self.__running_drivers[driver.label] = driver
 
     def stop_driver(self, driver):
         # escape quotes if they exist
@@ -56,7 +54,6 @@ class IndiServer(object):
         full_cmd = 'echo "%s" > %s' % (cmd, self.__fifo)
         logging.info(full_cmd)
         call(full_cmd, shell=True)
-        del self.__running_drivers[driver.label]
 
     def start(self, port=INDI_PORT, drivers=[]):
         if self.is_running():
@@ -64,7 +61,6 @@ class IndiServer(object):
 
         self.__clear_fifo()
         self.__run(port)
-        self.__running_drivers = {}
 
         for driver in drivers:
             self.start_driver(driver)
@@ -112,7 +108,6 @@ class IndiServer(object):
             call(command)
 
     def get_running_drivers(self):
-        # drivers = [proc.name() for proc in psutil.process_iter() if
-        #            proc.name().startswith('indi_')]
-        drivers = self.__running_drivers
+        drivers = [proc.name() for proc in psutil.process_iter() if
+                    proc.name().startswith('indi_')]
         return drivers
